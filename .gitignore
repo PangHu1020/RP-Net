@@ -1,0 +1,10 @@
+*.jpg
+*.pth
+*.mat
+*.log
+*.json
+*.png
+*.xlsx
+*.sh
+*.ipynb
+*.pyc
