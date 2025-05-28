@@ -1,6 +1,6 @@
 from model.modules.wtconv import WTConv2d
 from model.modules.refconv import RefConv
-from model.modules.ffc import FFC
+from FTN.model.modules.Frep_Mapping import Frep_Mapping
 import torch 
 import torch.nn as nn
 import torch.nn.functional as F
@@ -11,7 +11,7 @@ class FCM(nn.Module):
         self.conv = nn.Conv2d(in_channels=c, out_channels=c, kernel_size=3, stride=1, padding=1, bias=False)
         self.refconv = RefConv(in_channels=c, out_channels=c, kernel_size=3, stride=1, padding=1)
         self.wtconv = WTConv2d(c, c, kernel_size=3, stride=1, bias=False)
-        self.ffc = FFC(c, out_channels=c, kernel_size=3, stride=1, padding=1, bias=False, ratio_gin=0, ratio_gout=0.5)
+        self.ffc = Frep_Mapping(c, out_channels=c, kernel_size=3, stride=1, padding=1, bias=False, ratio_gin=0, ratio_gout=0.5)
 
     def forward(self, x):
         x1 = self.conv(x)

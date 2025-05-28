@@ -23,7 +23,7 @@ logger = setup_logging(args.exp, args.name)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-model = load_model(args.name)
+model = load_model(args.name, num_classes=args.num_classes)
 
 criterion = nn.CrossEntropyLoss().to(device)
 

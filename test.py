@@ -11,7 +11,7 @@ from openpyxl.styles import Alignment
 from model.head.mlp import MLP
 from model.neck.avgpool import Avgpool
 from model.backbone.resnet import ResNet
-from model.modules.ffc import FFC
+from FTN.model.modules.Frep_Mapping import Frep_Mapping
 from dataset.dataset import test_dataloader
 from utils.metric import Metrics
 from args_parser import parse_args
@@ -24,14 +24,14 @@ args = parse_args()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Define model components
-denoise = FFC(3, out_channels=3, kernel_size=3, stride=1, padding=1, bias=False, ratio_gin=0, ratio_gout=0.5).to(device)
+denoise = Frep_Mapping(3, out_channels=3, kernel_size=3, stride=1, padding=1, bias=False, ratio_gin=0, ratio_gout=0.5).to(device)
 E1 = ResNet().to(device)
 neck = Avgpool().to(device)
 head = MLP(in_features=args.num_him, num_classes=args.num_classes).to(device)
 
 # Load the best model checkpoint
-# checkpoint_path = os.path.join(args.checkpoints, args.name, 'best.pth')
-checkpoint_path = "/home/v1-5700x/zh/FTN/checkpoints/Recons+Alig(fft)/best.pth"
+checkpoint_path = os.path.join(args.checkpoints, args.name, 'best.pth')
+# checkpoint_path = "/home/v1-5700x/zh/FTN/checkpoints/Recons+Alig(fft)/best.pth"
 if not os.path.exists(checkpoint_path):
     raise FileNotFoundError(f"Checkpoint not found at {checkpoint_path}")
 
@@ -44,7 +44,7 @@ denoise.load_state_dict(checkpoint['model_state_dict']['denoise'])
 E1.eval()
 neck.eval()
 head.eval()
-# denoise.eval()
+denoise.eval()
 # Define metric calculation
 metric = Metrics(num_classes=args.num_classes)
 
@@ -90,7 +90,7 @@ metrics_dict = {
         f"{f1:.2f} ± {variance['f1_std'] * 100:.2f}",
         f"{specificity:.2f} ± {variance['specificity_std'] * 100:.2f}",
         f"{g_mean:.2f} ± {variance['g_mean_std'] * 100:.2f}",
-        f"{kappa:.2f} ± {variance['kappa_std'] * 100:.2f}",  # Kappa with its variance multiplied by 100
+        f"{kappa:.2f}",  # Kappa with its variance multiplied by 100
         f"{dice:.2f} ± {variance['dice_std'] * 100:.2f}",
         f"{auc:.2f} ± {variance['auc_std'] * 100:.2f}"   # AUC with its variance multiplied by 100
     ]

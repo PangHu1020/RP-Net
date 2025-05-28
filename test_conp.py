@@ -24,7 +24,8 @@ args = parse_args()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Define model components
-model = load_model(args.name)
+model = load_model(args.name, num_classes=args.num_classes).to(device)
+
 
 # Load the best model checkpoint
 checkpoint_path = os.path.join(args.checkpoints, args.name, 'best.pth')
@@ -81,7 +82,7 @@ metrics_dict = {
         f"{f1:.2f} ± {variance['f1_std'] * 100:.2f}",
         f"{specificity:.2f} ± {variance['specificity_std'] * 100:.2f}",
         f"{g_mean:.2f} ± {variance['g_mean_std'] * 100:.2f}",
-        f"{kappa:.2f} ± {variance['kappa_std'] * 100:.2f}",  # Kappa with its variance multiplied by 100
+        f"{kappa:.2f}",  # Kappa with its variance multiplied by 100
         f"{dice:.2f} ± {variance['dice_std'] * 100:.2f}",
         f"{auc:.2f} ± {variance['auc_std'] * 100:.2f}"   # AUC with its variance multiplied by 100
     ]

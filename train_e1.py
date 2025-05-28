@@ -9,7 +9,7 @@ import os
 from model.head.mlp import MLP
 from model.neck.avgpool import Avgpool
 from model.backbone.resnet import ResNet
-from model.modules.ffc import FFC
+from FTN.model.modules.Frep_Mapping import Frep_Mapping
 from dataset.dataset import train_dataloader, val_dataloader
 from utils.optimizer import get_optimizer
 from utils.metric import Metrics
@@ -44,8 +44,8 @@ scheduler = Schedule(optimizer=optimizer, warmup_epochs=args.warmup, min_lr=1e-6
 metric = Metrics(num_classes=args.num_classes)
 
 best_acc = float('-inf')
-best_pre = float('-inf')
-best_recall = float('-inf')
+best_f1 = float('-inf')
+best_auc = float('-inf')
 best_metric = float('-inf') 
 
 
@@ -106,18 +106,17 @@ for epoch in range(start_epoch, args.epochs):
             metric.update(outputs, labels)
         
         acc = metric.accuracy()
-        precision = metric.precision()
-        recall = metric.recall()
-
+        f1 = metric.f1_score()
+        auc = metric.auc_score()
     scheduler.step(acc)
 
-    best_metric = acc + precision + recall  # 计算所有指标之和
+    best_metric = acc + f1 + auc  # 计算所有指标之和
 
     # 保存最佳模型权重
-    if best_metric > (best_acc + best_pre + best_recall):
+    if best_metric > (best_acc + best_f1 + best_auc):
         best_acc = acc
-        best_pre = precision
-        best_recall = recall
+        best_f1 = f1
+        best_auc = auc
         torch.save({
             'model_state_dict': {
                 'E1': E1.state_dict(),
@@ -130,8 +129,8 @@ for epoch in range(start_epoch, args.epochs):
     current_lr = optimizer.param_groups[0]['lr']
     logger.info(f'Epoch {epoch+1}/{args.epochs}, Current lr: {current_lr:.2e}, Loss: {avg_loss:.4f}')
     logger.info(f'Best Acc: {best_acc:.2f}, Current Acc: {acc:.2f}, '
-                f'Best precision: {best_pre:.2f}, Current precision: {precision:.2f}, '
-                f'Best recall: {best_recall:.2f}, Current recall: {recall:.2f}')
+                f'Best F1: {best_f1:.2f}, Current F1: {f1:.2f}, '
+                f'Best AUC: {best_auc:.2f}, Current AUC: {auc:.2f}')
 
     # 保存最新模型权重
     torch.save({

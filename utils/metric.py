@@ -21,12 +21,16 @@ class Metrics:
 
     def update(self, output, target):
         _, predicted = torch.max(output, 1)
+        predicted = predicted.view(-1)
+        target = target.view(-1)
         self.total += target.size(0)
         self.correct += (predicted == target).sum().item()
-
+         
         # Store outputs and targets for AUC calculation
         self.all_targets.append(target.cpu())
         self.all_outputs.append(output.cpu())
+        # self.all_outputs.append(output.permute(0, 2, 3, 1).reshape(-1, output.size(1)).cpu())  # 注意这里要reshape
+
 
         for i in range(self.num_classes):
             tp_mask = (predicted == i) & (target == i)
@@ -41,6 +45,9 @@ class Metrics:
 
     def accuracy(self):
         return self.correct * 100 / self.total if self.total > 0 else 0
+        # correct = (self.tp.sum() + self.tn.sum())
+        # total = (self.tp + self.fp + self.fn + self.tn).sum()
+        # return correct * 100 / total if total > 0 else 0.0
 
     def precision(self):
         # Precision = TP / (TP + FP)

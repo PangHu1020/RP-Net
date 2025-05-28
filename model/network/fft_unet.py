@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.data
 import torch
-from ..modules.ffc import FFC, FFC_BN_ACT
+from ..modules.Frep_Mapping import FFC, FFC_BN_ACT
 
 class conv_block(nn.Module):
     """

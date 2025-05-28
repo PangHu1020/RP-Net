@@ -119,12 +119,12 @@ class SpectralTransform(nn.Module):
         return output
 
 
-class FFC(nn.Module):
+class Frep_Mapping(nn.Module):
 
     def __init__(self, in_channels, out_channels, kernel_size,
                  ratio_gin, ratio_gout, stride=1, padding=0,
                  dilation=1, groups=1, bias=False, enable_lfu=True):
-        super(FFC, self).__init__()
+        super(Frep_Mapping, self).__init__()
 
         assert stride == 1 or stride == 2, "Stride should be 1 or 2."
         self.stride = stride
@@ -175,7 +175,7 @@ class FFC_BN_ACT(nn.Module):
                  norm_layer=nn.BatchNorm2d, activation_layer=nn.Identity,
                  enable_lfu=True):
         super(FFC_BN_ACT, self).__init__()
-        self.ffc = FFC(in_channels, out_channels, kernel_size,
+        self.ffc = Frep_Mapping(in_channels, out_channels, kernel_size,
                        ratio_gin, ratio_gout, stride, padding, dilation,
                        groups, bias, enable_lfu)
         lnorm = nn.Identity if ratio_gout == 1 else norm_layer

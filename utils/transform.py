@@ -14,7 +14,7 @@ from PIL import Image
 # args = parse_args()
 
 
-# class reconstruction:
+# class GRM:
 #     def __init__(self, num=220,v=8,numPixels=128,number=64,Ndiscr_mon=6, path=args.simA):
 #         self.num = num
 #         self.v = v
@@ -163,7 +163,7 @@ from PIL import Image
 
 
 
-class DiffractionNoise:
+class DiffractionNoise_priori:
     def __init__(self, radius=30, noise_scale=0.1):
         self.radius = radius
         self.noise_scale = noise_scale
@@ -204,7 +204,7 @@ class DiffractionNoise:
     
 
 
-class DiffuseNoise:
+class DiffuseNoise_priori:
     def __init__(self, noise_scale=0.05, kernel_size=15):
         """
         :param noise_scale: 控制漫反射噪声的强度，值越大噪声越明显

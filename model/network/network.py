@@ -12,7 +12,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def load_model(model_name, num_classes=40):
     # 使用timm加载预训练模型
-    model = timm.create_model(model_name, pretrained=True)
+    model = create_model(model_name, pretrained=True)
     
     # 修改最后的全连接层 (FC Layer)，让其输出 40 个类别
     if 'convnext' in model_name:

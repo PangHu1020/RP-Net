@@ -9,7 +9,7 @@ from model.head.mlp import MLP
 from model.head.kan import KAN
 from model.neck.avgpool import Avgpool
 from model.backbone.resnet import ResNet
-from model.modules.ffc import FFC
+from FTN.model.modules.Frep_Mapping import Frep_Mapping
 from dataset.dataset import train_dataloader, val_dataloader
 from model.loss import CosineSimilarityLoss, TotalLoss
 from utils.optimizer import get_optimizer
@@ -22,7 +22,7 @@ args = parse_args()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-denoise = FFC(3, out_channels=3, kernel_size=3, stride=1, padding=1, bias=False, ratio_gin=0, ratio_gout=0.5).to(device)
+denoise = Frep_Mapping(3, out_channels=3, kernel_size=3, stride=1, padding=1, bias=False, ratio_gin=0, ratio_gout=0.5).to(device)
 E1 = ResNet().to(device)
 E2 = ResNet().to(device)
 neck = Avgpool().to(device)
@@ -30,15 +30,17 @@ head = MLP(in_features=args.num_him, num_classes=args.num_classes).to(device)
 # head = KAN(layers_hidden = [args.num_him, args.num_classes]).to(device)
 
 # Load the checkpoint
-checkpoint1 = torch.load("./checkpoints/E1/best.pth", map_location=device)
-checkpoint2 = torch.load("./checkpoints/Recons(fft)/best.pth", map_location=device)
+checkpoint1 = torch.load("./new_checkpoints/E1/best.pth", map_location=device)
+# checkpoint2 = torch.load("./new_checkpoints/E1/best.pth", map_location=device)
 
 # Load the state_dict for E1 and head from the checkpoint
 E1.load_state_dict(checkpoint1['model_state_dict']['E1'])
-# head.load_state_dict(checkpoint1['model_state_dict']['head'])
+head.load_state_dict(checkpoint1['model_state_dict']['head'])
 
-E2.load_state_dict(checkpoint2['model_state_dict']['E1'])
-denoise.load_state_dict(checkpoint2['model_state_dict']['denoise'])
+# E2.load_state_dict(checkpoint2['model_state_dict']['E1'])
+# denoise.load_state_dict(checkpoint2['model_state_dict']['denoise'])
+
+
 criterion = nn.CrossEntropyLoss().to(device)
 
 # criterion_tr = nn.MSELoss().to(device)
